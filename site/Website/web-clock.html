@@ -1,0 +1,37 @@
+<!doctype html><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1.0" name=viewport><title>9x9 Grid</title><style>@font-face{font-family:NameSmile;src:url("Name Smile.otf")format("opentype")}@property --mix{syntax:"<percentage>";inherits:false;initial-value:0%}*{box-sizing:border-box;margin:0;padding:0}body{background-color:#000;justify-content:center;align-items:center;width:100vw;height:100vh;display:flex;overflow:hidden}.grid-container{grid-template-rows:repeat(9,1fr);grid-template-columns:repeat(9,1fr);gap:1px;width:min(100vw,100vh);height:min(100vw,100vh);display:grid}.grid-cell{justify-content:center;align-items:center;width:100%;height:100%;display:flex}.letter{text-transform:uppercase;--from:oklch(30% 0 0);--to:oklch(30% 0 0);--mix:0%;color:color-mix(in oklch shorter hue,var(--from)calc(100% - var(--mix)),var(--to)var(--mix));font-family:NameSmile,monospace;font-size:calc(min(100vw,100vh)/10);transition:--mix 1s linear}@supports (text-box-trim:trim-both){.letter{text-box:trim-both cap alphabetic}}</style><body><div class=grid-container></div><script>const gridContainer=document.querySelector(`.grid-container`),allLetters=[`TENTWENTY`,`ATQUARTER`,`FIVEKHALF`,`PASTOETEN`,`FOURSEVEN`,`TWELVESIX`,`NINELEVEN`,`THREEFIVE`,`EIGHTWONE`].join(``),letterElements=[];
+// Generate 81 cells (9x9) with letters
+for(let i=0;i<81;i++){let cell=document.createElement(`div`);cell.className=`grid-cell`;
+// Add the letter wrapped in a span
+let letterSpan=document.createElement(`span`);
+// Store reference to letter element
+letterSpan.className=`letter`,letterSpan.textContent=allLetters[i],cell.appendChild(letterSpan),gridContainer.appendChild(cell),letterElements.push(letterSpan);
+// Set initial CSS custom properties
+let defaultGray=`oklch(0.3 0 0)`;letterSpan.style.setProperty(`--from`,defaultGray),letterSpan.style.setProperty(`--to`,defaultGray)}
+// Function to set next colors for all letters
+function setAllNextColors(colors){colors.forEach((color,index)=>{index<letterElements.length&&letterElements[index].style.setProperty(`--to`,color)})}
+// Use transition instead of animation
+function startFadeTransition(duration=1e3){
+// After transition completes, swap the colors
+letterElements.forEach(element=>{element.style.transition=`none`,element.style.setProperty(`--mix`,`0%`)}),requestAnimationFrame(()=>{letterElements.forEach(element=>{element.style.transition=`--mix ${duration}ms linear`,element.style.setProperty(`--mix`,`100%`)})}),setTimeout(()=>{letterElements.forEach(element=>{let toColor=element.style.getPropertyValue(`--to`);element.style.setProperty(`--from`,toColor),element.style.transition=`none`,element.style.setProperty(`--mix`,`0%`)})},duration)}
+// Fade duration for color transitions
+const FADE_DURATION=4e3,TIME_WORDS={a:[9],five_min:[18,19,20,21],ten_min:[0,1,2],quarter:[11,12,13,14,15,16,17],twenty:[3,4,5,6,7,8],half:[23,24,25,26],past:[27,28,29,30],to:[30,31],one:[78,79,80],two:[76,77,78],three:[63,64,65,66,67],four:[36,37,38,39],five_hour:[68,69,70,71],six:[51,52,53],seven:[40,41,42,43,44],eight:[72,73,74,75,76],nine:[54,55,56,57],ten_hour:[33,34,35],eleven:[57,58,59,60,61,62],twelve:[45,46,47,48,49,50]};function getTimeWords(date){const hours=date.getHours();let minutes=date.getMinutes(),seconds=date.getSeconds(),totalMinutes=minutes+seconds/60;
+// Handle hour overflow when rounding
+minutes=Math.round(totalMinutes/5)*5,minutes===60&&(minutes=0,hours=(hours+1)%24);
+// Convert to 12-hour format
+let displayHour=hours%12||12,words=[];return minutes===0||(minutes===5?words.push(`five_min`,`past`):minutes===10?words.push(`ten_min`,`past`):minutes===15?words.push(`a`,`quarter`,`past`):minutes===20?words.push(`twenty`,`past`):minutes===25?words.push(`twenty`,`five_min`,`past`):minutes===30?words.push(`half`,`past`):minutes===35?(words.push(`twenty`,`five_min`,`to`),displayHour=displayHour%12+1):minutes===40?(words.push(`twenty`,`to`),displayHour=displayHour%12+1):minutes===45?(words.push(`a`,`quarter`,`to`),displayHour=displayHour%12+1):minutes===50?(words.push(`ten_min`,`to`),displayHour=displayHour%12+1):minutes===55&&(words.push(`five_min`,`to`),displayHour=displayHour%12+1)),words.push({1:`one`,2:`two`,3:`three`,4:`four`,5:`five_hour`,6:`six`,7:`seven`,8:`eight`,9:`nine`,10:`ten_hour`,11:`eleven`,12:`twelve`}[displayHour]),words}function generateTimeColors(timeWords){let colors=[],wordToColor=/* @__PURE__ */ new Map;
+// Generate a random color for each word
+timeWords.forEach(word=>{if(TIME_WORDS[word]){let randomColor=`oklch(0.75 0.2 ${Math.random()*360})`;wordToColor.set(word,randomColor)}});
+// Assign colors to all letters
+for(let i=0;i<81;i++){let letterColor=`oklch(0.3 0 0)`;
+// Check if this index belongs to any active word
+for(let word of timeWords)if(TIME_WORDS[word]&&TIME_WORDS[word].includes(i)){letterColor=wordToColor.get(word);break}colors.push(letterColor)}return colors}let lastDisplayedWords=[],updateTimeout=null;function showTime(date,fadeDuration=FADE_DURATION){let timeWords=getTimeWords(date);lastDisplayedWords=timeWords,setAllNextColors(generateTimeColors(timeWords)),startFadeTransition(fadeDuration)}function clearUpdateTimeout(){updateTimeout&&=(clearTimeout(updateTimeout),null)}function scheduleNextUpdate(){
+// Clear any existing timeout
+clearUpdateTimeout();let now=/* @__PURE__ */ new Date,msPerMinute=60*1e3,msPerFiveMinutes=5*msPerMinute,msToNextFiveMinute=msPerFiveMinutes-(now.getMinutes()*msPerMinute+now.getSeconds()*1e3+now.getMilliseconds())%msPerFiveMinutes,earlyOffset=150*1e3+FADE_DURATION/2,msUntilUpdate=msToNextFiveMinute-152e3,finalDelay=msUntilUpdate>0?msUntilUpdate:msUntilUpdate+msPerFiveMinutes,nextUpdateTime=new Date(Date.now()+finalDelay);updateTimeout=setTimeout(()=>{
+// Schedule the next update
+showTime(new Date(Date.now()+150*1e3)),scheduleNextUpdate()},finalDelay)}
+// Check if we're in the early update window
+const now=/* @__PURE__ */ new Date,msPerMinute=60*1e3,msPerFiveMinutes=5*msPerMinute,msUntilNextFiveMinute=msPerFiveMinutes-(now.getMinutes()*msPerMinute+now.getSeconds()*1e3+now.getMilliseconds())%msPerFiveMinutes,earlyOffset=150*1e3+FADE_DURATION/2;
+// Update to current time on window focus
+showTime(msUntilNextFiveMinute<152e3?new Date(Date.now()+150*1e3):now,0),scheduleNextUpdate(),window.addEventListener(`focus`,()=>{let now=/* @__PURE__ */ new Date,nowWords=getTimeWords(now);
+// Restart the update schedule
+(nowWords.length!==lastDisplayedWords.length||!nowWords.every((word,index)=>word===lastDisplayedWords[index]))&&showTime(now,0),scheduleNextUpdate()});</script>

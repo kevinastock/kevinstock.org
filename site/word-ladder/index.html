@@ -1,0 +1,14 @@
+<!doctype html><html lang=en-US><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><link href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" rel=icon><title>Longest Shortest Word Ladder - Kevin Stock</title><meta content=no-referrer-when-downgrade name=referrer><link href=/static/style.css rel=stylesheet><body><header><a class=title href=/> <h2>Kevin Stock</h2> </a><nav><a href=/>Home</a><a href=https://github.com/kevinastock>GitHub</a><a href=mailto:kevin@kevinstock.org>Email</a><a href=tel:614-458-8382>Phone</a></nav></header><h1>Longest Shortest Word Ladder</h1><p class=page-date><i> <time datetime=2025-11-16> November 2025 </time> </i><main><p>Inspired by <a href=https://www.sculpture.org.nz/thesculptureshtml/body-to-soul>a statue in the Wellington botanic garden</a>, I wanted to find the two words with the longest shortest path between them. More properly I've learned, the diameter of the graph of words connected by single letter substitutions. For the dictionary I used, the here's the only path of length 13 for six letter words:<pre><code>BUTLER
+BUTTER
+BETTER
+LETTER
+LATTER
+MATTER
+MASTER
+FASTER
+FOSTER
+POSTER
+POSTED
+HOSTED
+HOSTEL
+</code></pre><p>A first version in python with networkx was too slow, so I had codex write it in rust and implement Floyd-Warshall directly.<p>Using <a href=https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-usa.txt>a word list</a> of the 10000 most common english words, the above was the only path length 13 for 6 letter words. For four letter words there are 50 paths of length 21, and for five letter words there are 13 paths of length 37.<p>Googling this afterwards, I found there's <a href=https://en.wikipedia.org/wiki/Word_ladder>a pretty old game about this</a>.<p>I then had codex write an implementation without any guidance from me. It implemented BFS from every word to find the furthest, which ran faster, presumably because it's sparse and there are many disconnected components.</main><hr><p class=page-date><i> Last updated: <time datetime=2026-01-01> January 2026 </time> </i><footer>🚀</footer>

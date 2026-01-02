@@ -1,0 +1,79 @@
+<!doctype html><html lang=en-US><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><link href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" rel=icon><title>A programming puzzle from Einav - Kevin Stock</title><meta content=no-referrer-when-downgrade name=referrer><link href=/static/style.css rel=stylesheet><body><header><a class=title href=/> <h2>Kevin Stock</h2> </a><nav><a href=/>Home</a><a href=https://github.com/kevinastock>GitHub</a><a href=mailto:kevin@kevinstock.org>Email</a><a href=tel:614-458-8382>Phone</a></nav></header><h1>A programming puzzle from Einav</h1><p class=page-date><i> <time datetime=2023-07-23> July 2023 </time> </i><main><p><a href=https://gcanyon.wordpress.com/2009/10/28/a-programming-puzzle-from-einav/>From Geoff Canyon's blog</a>, given a grid of positive and negative numbers, you can flip the sign of entire rows and columns, as many of them as you like. The goal is to make all the rows and columns sum to positive numbers (or zero), and then to find the solution (there are more than one) that has the smallest overall sum.<p>Here's my solution:<pre><code class=language-python>data = [
+	[33, 30, 10, -6, 18, -7, -11, 23, -6],
+	[16, -19, 9, -26, -8, -19, -8, -21, -14],
+	[17, 12, -14, 31, -30, 13, -13, 19, 16],
+	[-6, -11, 1, 17, -12, -4, -7, 14, -21],
+	[18, -31, 34, -22, 17, -19, 20, 24, 6],
+	[33, -18, 17, -15, 31, -5, 3, 27, -3],
+	[-18, -20, -18, 31, 6, 4, -2, -12, 24],
+	[27, 14, 4, -29, -3, 5, -29, 8, -12],
+	[-15, -7, -23, 23, -9, -8, 6, 8, -12],
+	[33, -23, -19, -4, -8, -7, 11, -12, 31],
+	[-20, 19, -15, -30, 11, 32, 7, 14, -5],
+	[-23, 18, -32, -2, -31, -7, 8, 24, 16],
+	[32, -4, -10, -14, -6, -1, 0, 23, 23],
+	[25, 0, -23, 22, 12, 28, -27, 15, 4],
+	[-30, -13, -16, -3, -3, -32, -3, 27, -31],
+	[22, 1, 26, 4, -2, -13, 26, 17, 14],
+	[-9, -18, 3, -20, -27, -32, -11, 27, 13],
+	[-17, 33, -7, 19, -32, 13, -31, -2, -24],
+	[-31, 27, -31, -29, 15, 2, 29, -15, 33],
+	[-18, -23, 15, 28, 0, 30, -4, 12, -32],
+	[-3, 34, 27, -25, -18, 26, 1, 34, 26],
+	[-21, -31, -10, -13, -30, -17, -12, -26, 31],
+	[23, -31, -19, 21, -17, -10, 2, -23, 23],
+	[-3, 6, 0, -3, -32, 0, -10, -25, 14],
+	[-19, 9, 14, -27, 20, 15, -5, -27, 18],
+	[11, -6, 24, 7, -17, 26, 20, -31, -25],
+	[-25, 4, -16, 30, 33, 23, -4, -4, 23],
+]
+
+# Try every permutatation of inversions of the columns (the smaller dimension)
+# and for each those, fix the negations of the rows to ensure row sums are all
+# positive. If after that the col sums are positive, we have found a candidate
+# solution, then we find the lowest summing of those candidates
+
+# Precompute the row and column sums for the initial state
+row_sums = [sum(r) for r in data]
+col_sums = [sum(c) for c in zip(*data)]
+
+# Set best to a value larger than any possible solution
+best = sum(abs(v) for r in data for v in r)
+
+# If the initial position is a candidate, we should set best to that
+if all(x > 0 for x in row_sums + col_sums):
+	best = sum(col_sums)
+
+
+# Helper function to invert one element of the grid, along with the
+# relevant row and col sums.
+def flip(r, c):
+	data[r][c] *= -1
+	row_sums[r] += 2 * data[r][c]
+	col_sums[c] += 2 * data[r][c]
+
+
+# Each permutation of column negations updates the data and sums in place.
+# To minimize the amount of work done, iterate the permutations using gray
+# codes so only one column needs to change each time.
+for i in range(1, 1 &lt;&lt; len(col_sums)):
+	# Compute the index of the column to change for the next value in the
+	# sequence of gray codes. Optimization from https://oeis.org/A007814
+	c = (~i & i - 1).bit_length()
+
+	# Update that column in each row
+	for r in range(len(row_sums)):
+		flip(r, c)
+
+		# If the row is now negative, invert it
+		if row_sums[r] &lt; 0:
+			for c2 in range(len(col_sums)):
+				flip(r, c2)
+
+	# If this is a candidate, check if it's the best so far
+	if all(x >= 0 for x in col_sums):
+		best = min(best, sum(col_sums))
+
+# Best value is 812
+print(best)
+</code></pre></main><hr><p class=page-date><i> Last updated: <time datetime=2026-01-01> January 2026 </time> </i><footer>🚀</footer>

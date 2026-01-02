@@ -1,0 +1,8 @@
+<!doctype html><html lang=en-US><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><link href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" rel=icon><title>OpenSCAD Python Wrapper - Kevin Stock</title><meta content=no-referrer-when-downgrade name=referrer><link href=/static/style.css rel=stylesheet><body><header><a class=title href=/> <h2>Kevin Stock</h2> </a><nav><a href=/>Home</a><a href=https://github.com/kevinastock>GitHub</a><a href=mailto:kevin@kevinstock.org>Email</a><a href=tel:614-458-8382>Phone</a></nav></header><h1>OpenSCAD Python Wrapper</h1><p class=page-date><i> <time datetime=2015-11-24> November 2015 </time> </i><main><p><img alt="Rendered Output" src=/Website/openscad-demo.png><p>I really don't like writing OpenSCAD code, but it's a useful tool, so I made a <a href=https://gist.github.com/kevinastock/39872bcbcee803e979f7>wrapper</a> that lets me write python instead to produce OpenSCAD objects.<pre><code class=language-python>from scad import *
+
+toy = cube(100) * sphere(67) - sphere(65)
+toy = toy.translate(0,0,50)
+toys = sum(toy.scale(0.8**i) for i in range(4))
+
+repl(toys)
+</code></pre></main><hr><p class=page-date><i> Last updated: <time datetime=2026-01-01> January 2026 </time> </i><footer>🚀</footer>
