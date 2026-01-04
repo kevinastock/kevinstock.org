@@ -3,6 +3,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+git -C "$HOME/Obsidian" add -A
+if ! git -C "$HOME/Obsidian" diff --cached --quiet; then
+  git -C "$HOME/Obsidian" commit -m "Commit before running soggy"
+fi
+
+if [[ -n "$(git -C "$HOME/Obsidian" remote 2>/dev/null || true)" ]]; then
+  git -C "$HOME/Obsidian" push
+fi
+
 uv --directory "$HOME/git/soggy" run generate "$HOME/Obsidian" "$SCRIPT_DIR/docs" --overwrite
 
 git -c color.status=always status -uall
