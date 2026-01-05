@@ -26,7 +26,8 @@ cleanup() {
 trap cleanup EXIT
 trap 'cleanup; exit 130' INT TERM
 
-python3 -m http.server --directory "$SCRIPT_DIR/docs" &
+server_log="$SCRIPT_DIR/.http-server.log"
+python3 -m http.server --directory "$SCRIPT_DIR/docs" >"$server_log" 2>&1 </dev/null &
 server_pid=$!
 
 echo
