@@ -3,6 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [[ -n "$(git -C "$SCRIPT_DIR" status --porcelain)" ]]; then
+  echo "Refusing to run: git status not clean in $SCRIPT_DIR" >&2
+  exit 1
+fi
+
 git -C "$HOME/Obsidian" add -A
 if ! git -C "$HOME/Obsidian" diff --cached --quiet; then
   git -C "$HOME/Obsidian" commit -m "Commit before running soggy"
