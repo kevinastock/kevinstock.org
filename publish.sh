@@ -23,7 +23,8 @@ cleanup() {
     wait "$server_pid" 2>/dev/null || true
   fi
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'cleanup; exit 130' INT TERM
 
 python3 -m http.server --directory "$SCRIPT_DIR/docs" &
 server_pid=$!
