@@ -16,6 +16,18 @@ uv --directory "$HOME/git/soggy" run generate "$HOME/Obsidian" "$SCRIPT_DIR/docs
 
 git -c color.status=always status -uall
 
+server_pid=""
+cleanup() {
+  if [[ -n "${server_pid:-}" ]] && kill -0 "$server_pid" 2>/dev/null; then
+    kill "$server_pid"
+    wait "$server_pid" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT INT TERM
+
+python3 -m http.server --directory "$SCRIPT_DIR/docs" &
+server_pid=$!
+
 echo
 read -r -p "commit and push [Y/n] " reply
 reply=${reply:-Y}
