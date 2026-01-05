@@ -12,7 +12,7 @@ if [[ -n "$(git -C "$HOME/Obsidian" remote 2>/dev/null || true)" ]]; then
   git -C "$HOME/Obsidian" push
 fi
 
-uv --directory "$HOME/git/soggy" run generate "$HOME/Obsidian" "$SCRIPT_DIR/docs" --overwrite
+uv --directory "$HOME/git/soggy" run generate "$HOME/Obsidian" "$SCRIPT_DIR/docs" --overwrite --ignore-output CNAME
 
 git -c color.status=always status -uall
 
