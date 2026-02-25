@@ -1,0 +1,87 @@
+<!doctype html><html lang=en-US><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><link href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" rel=icon><title>GibberiSH - Kevin Stock</title><meta content=no-referrer-when-downgrade name=referrer><link href=/static/style.css rel=stylesheet><body><header><a class=title href=/> <h2>Kevin Stock</h2> </a><nav><a href=/>Home</a><a href=https://github.com/kevinastock>GitHub</a><a href=mailto:kevin@kevinstock.org>Email</a><a href=tel:614-458-8382>Phone</a></nav></header><h1>GibberiSH</h1><p class=page-date><i> <time datetime=2026-02-21> February 2026 </time> </i><main><p>I thought it would be funny to set up an account with an agent as the shell. There are lots of tools for having llms to help on the command line, but none that I could find are recklessly yolo, and they assume you still want to use the terminal; I really wanted the agent to use the terminal for me and just report the results back.<p>So I set up a PTY-backed virtual terminal using <a href=https://github.com/asciinema/avt>avt</a> in my process, set up an agent with only one tool, and wrapped that in a REPL. The given tool takes two inputs: a string of bytes (with some escape sequences available) to send to bash, and a float: seconds to wait. The tool sends the bytes, waits, and then returns the contents of the virtual terminal. The agent only ever sees the terminal screen, thus having to use the computer just like the rest of us.<p>This is fun because the agent isn’t just executing processes, it’s driving the whole terminal. It can wait for long running programs, it can do bash job management. It can play NetHack!<p>Clearly the models are trained to execute commands that will terminate; they required some encouragement to edit files with vim etc. But it was able to install and play nethack without any trouble.<p>Here's the start of a session with the agent, showing the prompt and its first tool calls.<blockquote><p>Play some nethack to show off what you can do. Go for a fast and funny death. After a few turns, suspend the game to quickly do some "work" you forgot about until then (idk, edit a file with vim), then resume playing the game for a little bit.</blockquote><h4>Tool call 1</h4><pre><code>{
+  "str": "nethack\n",
+  "float": 0.5
+}
+</code></pre><pre><code>~/gibberish[0]$ nethack
+bash: nethack: command not found
+~/gibberish[127]$ ▮
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cursor info: row=2, col=18, char=" "
+</code></pre><h4>Tool call 2</h4><pre><code>{
+  "str": "sudo apt-get update && sudo apt-get install -y nethack-console\n",
+  "float": 0.5
+}
+</code></pre><pre><code>~/gibberish[0]$ nethack
+bash: nethack: command not found
+~/gibberish[127]$ sudo apt-get update && sudo apt-get install -y nethack-console
+Get:1 https://pkgs.tailscale.com/stable/raspbian bookworm InRelease
+Hit:2 http://archive.raspberrypi.com/debian bookworm InRelease
+0% [Connecting to raspbian.raspberrypi.com (2a00:1098:0:80:1000:75:0:3)]▮
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cursor info: row=5, col=72, char=" "
+</code></pre><p>At this point it sent a couple tool calls with no keystrokes just to wait a few seconds at a time for the install to complete.<h4>Tool call 5</h4><pre><code>{
+  "str": "nethack\n",
+  "float": 0.7
+}
+</code></pre><pre><code>NetHack, Copyright 1985-2020
+         By Stichting Mathematisch Centrum and M. Stephenson.
+         Version 3.6.6 Unix, revised Aug 14 14:04:40 2022.
+         See license for details.
+
+
+Shall I pick character's race, role, gender and alignment for you? [ynaq] ▮
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cursor info: row=7, col=74, char=" "
+</code></pre><p><a href=https://gisthost.github.io/?ddfaa18a70a4d7314fc8ada8fd2a716a/nethack.html>See the rest of the session here</a><p><a href=https://github.com/kevinastock/gibberish>Source</a></main><hr><p class=page-date><i> Last updated: <time datetime=2026-02-24> February 2026 </time> </i><footer>🚀</footer>
